@@ -1,249 +1,54 @@
-# CODITECT Development Environment - Terraform Variables
-# Copy this file to terraform.tfvars and customize values
-# DO NOT commit terraform.tfvars to git (contains sensitive data)
+# Example Terraform Variables - Development Environment
+# Copy this file to terraform.tfvars and fill in actual values
+# NEVER commit terraform.tfvars to git!
 
-# ============================================================================
-# GCP Project Configuration
-# ============================================================================
-
-project_id = "coditect-dev"
-project_name = "CODITECT Development"
-region = "us-central1"
-zone = "us-central1-a"
-
-# Additional regions for multi-region setup (optional for dev)
-regions = ["us-central1"]
-
-# ============================================================================
-# Environment Configuration
-# ============================================================================
-
+# Project Configuration
+project_id = "coditect-citus-prod"
+region     = "us-central1"
 environment = "dev"
-labels = {
-  environment = "dev"
-  project     = "coditect"
-  managed_by  = "terraform"
-  team        = "platform"
-}
 
-# ============================================================================
-# GKE Cluster Configuration
-# ============================================================================
+# Network Configuration
+network_name           = "coditect-vpc"
+primary_subnet_cidr    = "10.10.0.0/20"
+pods_secondary_cidr    = "10.14.0.0/14"
+services_secondary_cidr = "10.18.0.0/20"
 
-gke_cluster_name = "coditect-gke-dev"
-gke_cluster_version = "1.28"  # Latest stable
+# GKE Configuration
+cluster_name    = "coditect-citus"
+min_node_count  = 1
+max_node_count  = 5
+machine_type    = "n1-standard-2"
+disk_size_gb    = 50
+node_zones      = ["us-central1-a", "us-central1-b", "us-central1-c"]
 
-# Node pool configuration
-gke_node_pools = {
-  default = {
-    machine_type   = "n2-standard-2"
-    min_nodes      = 1
-    max_nodes      = 3
-    disk_size_gb   = 50
-    disk_type      = "pd-standard"
-    preemptible    = true  # Cost savings for dev
-    auto_repair    = true
-    auto_upgrade   = true
-  }
-}
+# Cloud SQL Configuration
+db_instance_name      = "coditect-citus"
+db_tier               = "db-custom-2-8192"
+db_disk_size_gb       = 50
+db_availability_type  = "ZONAL"
+db_backup_enabled     = true
 
-# GKE features
-gke_enable_private_nodes     = true
-gke_enable_private_endpoint  = false  # Allow public access for dev
-gke_master_ipv4_cidr         = "172.16.0.0/28"
-gke_enable_workload_identity = true
-gke_enable_vertical_pod_autoscaling = true
-
-# ============================================================================
-# Networking Configuration
-# ============================================================================
-
-vpc_name = "coditect-vpc-dev"
-subnet_name = "gke-subnet-dev"
-subnet_cidr = "10.0.0.0/20"
-
-# Secondary IP ranges for GKE
-pods_cidr_range = "10.1.0.0/16"
-services_cidr_range = "10.2.0.0/16"
-
-# Database subnet
-db_subnet_name = "db-subnet-dev"
-db_subnet_cidr = "10.0.16.0/24"
-
-# Redis subnet
-redis_subnet_name = "redis-subnet-dev"
-redis_subnet_cidr = "10.0.17.0/24"
-
-# ============================================================================
-# Cloud SQL (PostgreSQL) Configuration
-# ============================================================================
-
-cloudsql_instance_name = "coditect-postgres-dev"
-cloudsql_database_version = "POSTGRES_15"
-cloudsql_tier = "db-custom-2-7680"  # 2 vCPU, 7.5GB RAM (dev-sized)
-cloudsql_disk_size = 50  # GB
-cloudsql_disk_type = "PD_SSD"
-cloudsql_availability_type = "ZONAL"  # Single zone for dev (cost savings)
-
-# High availability settings
-cloudsql_backup_enabled = true
-cloudsql_backup_start_time = "03:00"  # 3 AM
-cloudsql_point_in_time_recovery = true
-
-# Database flags (optional)
-cloudsql_database_flags = []
-
-# ============================================================================
 # Redis Configuration
-# ============================================================================
+redis_instance_name   = "coditect-redis"
+redis_memory_size_gb  = 1
+redis_tier            = "BASIC"
 
-redis_instance_name = "coditect-redis-dev"
-redis_tier = "BASIC"  # BASIC for dev, STANDARD_HA for prod
-redis_memory_size_gb = 1
-redis_version = "REDIS_7_0"
+# Service Account (optional - will be created if empty)
+gke_service_account_email = ""
 
-# ============================================================================
-# Service Accounts
-# ============================================================================
+# Database Credentials (REQUIRED - use Secret Manager or environment variables)
+# DO NOT hardcode passwords here in production!
+# Instead, use:
+#   export TF_VAR_db_app_user_password="your-password"
+#   export TF_VAR_db_readonly_user_password="your-password"
+db_app_user_password      = "REPLACE_WITH_SECURE_PASSWORD"
+db_readonly_user_password = "REPLACE_WITH_SECURE_PASSWORD"
 
-# Service accounts created by IAM setup script
-terraform_sa_email = "terraform-sa@coditect-dev.iam.gserviceaccount.com"
-gke_sa_email = "gke-sa@coditect-dev.iam.gserviceaccount.com"
-django_app_sa_email = "django-app-sa@coditect-dev.iam.gserviceaccount.com"
-
-# ============================================================================
-# Secrets Configuration
-# ============================================================================
-
-# Secrets to create in Secret Manager
-secrets = [
-  "django-secret-key",
-  "db-password",
-  "stripe-api-key",
-  "oauth-client-secret"
-]
-
-# ============================================================================
-# Storage Configuration
-# ============================================================================
-
-# GCS buckets
-gcs_buckets = {
-  static = {
-    name          = "coditect-dev-static"
-    location      = "US"
-    storage_class = "STANDARD"
-    versioning    = false
-  }
-  media = {
-    name          = "coditect-dev-media"
-    location      = "US"
-    storage_class = "STANDARD"
-    versioning    = false
-  }
-  backups = {
-    name          = "coditect-dev-backups"
-    location      = "US"
-    storage_class = "NEARLINE"  # Cost-effective for backups
-    versioning    = true
-  }
+# Common Tags
+common_tags = {
+  environment = "dev"
+  project     = "coditect-citus"
+  managed_by  = "terraform"
+  cost_center = "development"
+  owner       = "devops-team"
 }
-
-# ============================================================================
-# Monitoring Configuration
-# ============================================================================
-
-enable_monitoring = true
-enable_logging = true
-log_retention_days = 30  # 30 days for dev
-
-# Prometheus stack
-enable_prometheus = true
-prometheus_storage_size = "20Gi"
-
-# Grafana
-enable_grafana = true
-
-# Jaeger tracing
-enable_jaeger = true
-
-# ============================================================================
-# Security Configuration
-# ============================================================================
-
-# Firewall rules
-allowed_ssh_sources = ["0.0.0.0/0"]  # Restrict in production
-allowed_https_sources = ["0.0.0.0/0"]
-
-# Network policies
-enable_network_policies = true
-
-# Binary authorization (disabled for dev, enable for prod)
-enable_binary_authorization = false
-
-# ============================================================================
-# Cost Management
-# ============================================================================
-
-# Budget alerts
-budget_amount = 500  # USD per month
-budget_alert_thresholds = [0.5, 0.9, 1.0]  # 50%, 90%, 100%
-
-# Auto-scaling limits to prevent cost overruns
-max_nodes_per_zone = 5
-
-# ============================================================================
-# Feature Flags
-# ============================================================================
-
-# Enable/disable optional features
-enable_auto_scaling = true
-enable_cluster_autoscaling = true
-enable_vertical_pod_autoscaling = true
-enable_maintenance_window = true
-
-# Maintenance window (Sundays 4-8 AM)
-maintenance_window_day = "sunday"
-maintenance_window_start_time = "04:00"
-maintenance_window_duration = "4h"
-
-# ============================================================================
-# Application Configuration
-# ============================================================================
-
-# Django application
-django_image_tag = "latest"
-django_replicas = 2
-django_resources = {
-  requests = {
-    cpu    = "500m"
-    memory = "512Mi"
-  }
-  limits = {
-    cpu    = "1000m"
-    memory = "1Gi"
-  }
-}
-
-# Celery workers
-celery_replicas = 1
-celery_resources = {
-  requests = {
-    cpu    = "250m"
-    memory = "256Mi"
-  }
-  limits = {
-    cpu    = "500m"
-    memory = "512Mi"
-  }
-}
-
-# ============================================================================
-# Notes
-# ============================================================================
-
-# 1. Copy this file to terraform.tfvars and customize
-# 2. Never commit terraform.tfvars to git
-# 3. Use Secret Manager for sensitive values
-# 4. Review and adjust resource sizes based on actual usage
-# 5. Enable cost optimization features for dev environment
