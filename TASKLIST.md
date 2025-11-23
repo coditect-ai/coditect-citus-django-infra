@@ -10,12 +10,12 @@
 
 ### Environment Setup (Week 1)
 
-- [ ] **P1-T01:** Environment Setup (5 days)
-  - [ ] Setup GCP project and enable required APIs
-  - [ ] Configure IAM service accounts
-  - [ ] Setup development, staging, production projects
-  - [ ] Install required tools (gcloud, terraform, kubectl, helm)
-  - [ ] Configure local development environment
+- [x] **P1-T01:** Environment Setup (5 days) ✅ **COMPLETED**
+  - [x] Setup GCP project and enable required APIs (scripts/gcp-setup.sh)
+  - [x] Configure IAM service accounts (scripts/iam-setup.sh)
+  - [x] Setup development, staging, production projects (terraform.tfvars.example files)
+  - [x] Install required tools (scripts/install-tools.sh, scripts/verify-tools.sh)
+  - [x] Configure local development environment (docs/LOCAL-DEVELOPMENT.md, .env.example updated)
 
 ### Terraform Infrastructure (Weeks 2-3)
 
