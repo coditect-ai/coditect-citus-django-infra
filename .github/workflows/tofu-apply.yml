@@ -113,7 +113,7 @@ jobs:
           tofu init
 
       - name: Download plan
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: tfplan-${{ inputs.environment }}
           path: opentofu/environments/${{ inputs.environment }}/
