@@ -38,4 +38,4 @@ opentelemetry-instrumentation-django==0.49b2
 
 # Utilities
 python-dateutil==2.9.0
-pytz==2024.2
+pytz==2025.2
