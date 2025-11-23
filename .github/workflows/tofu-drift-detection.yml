@@ -43,25 +43,25 @@ jobs:
 
       - name: Initialize OpenTofu
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu init
 
       - name: Refresh state
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu refresh -no-color 2>&1 | tee refresh.log
 
       - name: Detect drift
         id: plan
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu plan -detailed-exitcode -no-color 2>&1 | tee drift.log
         continue-on-error: true
 
       - name: Check for drift
         id: drift
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           if [ ${{ steps.plan.outputs.exitcode }} -eq 2 ]; then
             echo "drift=true" >> $GITHUB_OUTPUT
             echo "✅ Drift detected in ${{ matrix.environment }}"
@@ -76,8 +76,8 @@ jobs:
         with:
           name: drift-report-${{ matrix.environment }}-${{ github.run_number }}
           path: |
-            terraform/environments/${{ matrix.environment }}/drift.log
-            terraform/environments/${{ matrix.environment }}/refresh.log
+            opentofu/environments/${{ matrix.environment }}/drift.log
+            opentofu/environments/${{ matrix.environment }}/refresh.log
           retention-days: 30
 
       - name: Create drift issue
@@ -86,7 +86,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const driftLog = fs.readFileSync('terraform/environments/${{ matrix.environment }}/drift.log', 'utf8');
+            const driftLog = fs.readFileSync('opentofu/environments/${{ matrix.environment }}/drift.log', 'utf8');
 
             const issueTitle = `🔀 Infrastructure Drift Detected - ${{ matrix.environment }}`;
             const issueBody = `### Drift Detection Alert

@@ -46,24 +46,24 @@ jobs:
 
       - name: Initialize OpenTofu
         run: |
-          cd terraform/environments/${{ inputs.environment }}
+          cd opentofu/environments/${{ inputs.environment }}
           tofu init
 
       - name: Validate configuration
         run: |
-          cd terraform/environments/${{ inputs.environment }}
+          cd opentofu/environments/${{ inputs.environment }}
           tofu validate
 
       - name: Create plan
         run: |
-          cd terraform/environments/${{ inputs.environment }}
+          cd opentofu/environments/${{ inputs.environment }}
           tofu plan -out=tfplan
 
       - name: Upload plan
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-${{ inputs.environment }}
-          path: terraform/environments/${{ inputs.environment }}/tfplan
+          path: opentofu/environments/${{ inputs.environment }}/tfplan
           retention-days: 1
 
   approve:
@@ -109,19 +109,19 @@ jobs:
 
       - name: Initialize OpenTofu
         run: |
-          cd terraform/environments/${{ inputs.environment }}
+          cd opentofu/environments/${{ inputs.environment }}
           tofu init
 
       - name: Download plan
         uses: actions/download-artifact@v4
         with:
           name: tfplan-${{ inputs.environment }}
-          path: terraform/environments/${{ inputs.environment }}/
+          path: opentofu/environments/${{ inputs.environment }}/
 
       - name: Apply infrastructure changes
         id: apply
         run: |
-          cd terraform/environments/${{ inputs.environment }}
+          cd opentofu/environments/${{ inputs.environment }}
           tofu apply -auto-approve tfplan 2>&1 | tee apply.log
 
       - name: Upload apply log
@@ -129,13 +129,13 @@ jobs:
         if: always()
         with:
           name: apply-log-${{ inputs.environment }}-${{ github.run_number }}
-          path: terraform/environments/${{ inputs.environment }}/apply.log
+          path: opentofu/environments/${{ inputs.environment }}/apply.log
           retention-days: 90
 
       - name: Create deployment summary
         if: always()
         run: |
-          cd terraform/environments/${{ inputs.environment }}
+          cd opentofu/environments/${{ inputs.environment }}
           echo "## OpenTofu Apply Summary - ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Environment**: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY

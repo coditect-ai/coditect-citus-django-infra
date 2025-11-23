@@ -214,7 +214,7 @@ The project is structured in 6 phases over 20-24 weeks:
    - Create README.md, CONTRIBUTING.md, LICENSE
 
 2. **Project Structure**
-   - Create directory structure (terraform/, kubernetes/, django/, docs/)
+   - Create directory structure (opentofu/, kubernetes/, django/, docs/)
    - Setup .coditect symlink to master repo
    - Initialize Python project (pyproject.toml, requirements.txt)
    - Create Docker development environment
@@ -345,7 +345,7 @@ The project is structured in 6 phases over 20-24 weeks:
 #### Week 5: Environment Configurations ✅ COMPLETED
 
 7. **Development Environment** ✅
-   - terraform/environments/dev/
+   - opentofu/environments/dev/
    - Small instance sizes (cost optimization)
    - Single-zone GKE cluster
    - Non-HA Cloud SQL instance
@@ -353,7 +353,7 @@ The project is structured in 6 phases over 20-24 weeks:
    - OpenTofu validation: PASSED
 
 8. **Staging Environment** ✅
-   - terraform/environments/staging/
+   - opentofu/environments/staging/
    - Production-like configuration
    - Multi-zone GKE cluster
    - HA Cloud SQL instance
@@ -361,7 +361,7 @@ The project is structured in 6 phases over 20-24 weeks:
    - OpenTofu validation: PASSED
 
 9. **Production Environment** ✅
-   - terraform/environments/production/
+   - opentofu/environments/production/
    - Maximum redundancy and HA
    - Multi-zone, multi-region planning
    - Strict change management

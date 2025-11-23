@@ -16,7 +16,7 @@ Successfully created 6 production-ready Terraform modules for deploying hypersca
 
 ## Modules Created
 
-### 1. GKE Cluster Module (`terraform/modules/gke/`)
+### 1. GKE Cluster Module (`opentofu/modules/gke/`)
 
 **Purpose:** Google Kubernetes Engine cluster for containerized applications
 
@@ -46,7 +46,7 @@ Successfully created 6 production-ready Terraform modules for deploying hypersca
 
 ---
 
-### 2. Cloud SQL PostgreSQL Module (`terraform/modules/cloudsql/`)
+### 2. Cloud SQL PostgreSQL Module (`opentofu/modules/cloudsql/`)
 
 **Purpose:** Managed PostgreSQL database with Citus extension support
 
@@ -83,7 +83,7 @@ Successfully created 6 production-ready Terraform modules for deploying hypersca
 
 ---
 
-### 3. Redis Cluster Module (`terraform/modules/redis/`)
+### 3. Redis Cluster Module (`opentofu/modules/redis/`)
 
 **Purpose:** Cloud Memorystore for Redis (caching and session management)
 
@@ -113,7 +113,7 @@ Successfully created 6 production-ready Terraform modules for deploying hypersca
 
 ---
 
-### 4. VPC Networking Module (`terraform/modules/networking/`)
+### 4. VPC Networking Module (`opentofu/modules/networking/`)
 
 **Purpose:** Custom VPC with subnets, Cloud Router, and Cloud NAT
 
@@ -144,7 +144,7 @@ Successfully created 6 production-ready Terraform modules for deploying hypersca
 
 ---
 
-### 5. Firewall Rules Module (`terraform/modules/firewall/`)
+### 5. Firewall Rules Module (`opentofu/modules/firewall/`)
 
 **Purpose:** Least-privilege firewall rules for GKE and infrastructure
 
@@ -176,7 +176,7 @@ Successfully created 6 production-ready Terraform modules for deploying hypersca
 
 ---
 
-### 6. Secret Manager Module (`terraform/modules/secrets/`)
+### 6. Secret Manager Module (`opentofu/modules/secrets/`)
 
 **Purpose:** Centralized secrets storage with rotation and IAM control
 
@@ -303,9 +303,9 @@ All modules include:
 Create environment-specific root modules that compose these 6 modules:
 
 **Environments:**
-- `terraform/environments/dev/` - Development environment
-- `terraform/environments/staging/` - Staging environment
-- `terraform/environments/production/` - Production environment
+- `opentofu/environments/dev/` - Development environment
+- `opentofu/environments/staging/` - Staging environment
+- `opentofu/environments/production/` - Production environment
 
 **Each environment needs:**
 - `main.tf` - Module composition
@@ -317,7 +317,7 @@ Create environment-specific root modules that compose these 6 modules:
 
 ### 2. Example Environment Configuration
 
-**Production (`terraform/environments/production/main.tf`):**
+**Production (`opentofu/environments/production/main.tf`):**
 ```hcl
 module "networking" {
   source = "../../modules/networking"
@@ -358,7 +358,7 @@ module "cloudsql" {
 
 ```bash
 # Initialize Terraform
-cd terraform/environments/production
+cd opentofu/environments/production
 terraform init
 
 # Plan infrastructure changes
@@ -482,15 +482,15 @@ These modules align with the following architecture decisions:
 ## Team Handoff
 
 **For Infrastructure Team:**
-1. Review module documentation in `terraform/modules/*/README.md`
+1. Review module documentation in `opentofu/modules/*/README.md`
 2. Customize variables in Phase 1 Task P1-T03 (root modules)
 3. Review cost estimates before deployment
 4. Plan GCP quota increases for production (GKE nodes, Cloud SQL)
 
 **For Security Team:**
-1. Review firewall rules in `terraform/modules/firewall/`
-2. Review Secret Manager IAM bindings in `terraform/modules/secrets/`
-3. Validate network architecture in `terraform/modules/networking/`
+1. Review firewall rules in `opentofu/modules/firewall/`
+2. Review Secret Manager IAM bindings in `opentofu/modules/secrets/`
+3. Validate network architecture in `opentofu/modules/networking/`
 
 **For Development Team:**
 1. Review GKE configuration for container requirements

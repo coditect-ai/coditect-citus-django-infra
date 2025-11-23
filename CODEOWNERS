@@ -9,7 +9,7 @@
 * @coditect-infrastructure-team
 
 # Terraform infrastructure
-/terraform/ @coditect-infrastructure-team @coditect-devops-lead
+/opentofu/ @coditect-infrastructure-team @coditect-devops-lead
 
 # Kubernetes configurations
 /kubernetes/ @coditect-kubernetes-team @coditect-devops-lead
@@ -35,7 +35,7 @@ CONTRIBUTING.md @coditect-tech-lead
 # Security-sensitive files
 *.yaml @coditect-security-team
 *.yml @coditect-security-team
-/terraform/**/*.tf @coditect-security-team
+/opentofu/**/*.tf @coditect-security-team
 CODEOWNERS @coditect-tech-lead
 
 # Python dependencies

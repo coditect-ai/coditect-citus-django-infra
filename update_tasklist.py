@@ -16,7 +16,7 @@ completed_patterns = [
     r'- \[ \] Setup \.gitignore for Kubernetes',
     
     # Task 0.2
-    r'- \[ \] Create terraform/ directory structure',
+    r'- \[ \] Create opentofu/ directory structure',
     r'- \[ \] Create kubernetes/ directory',
     r'- \[ \] Create django/ directory',
     r'- \[ \] Create docs/ directory',

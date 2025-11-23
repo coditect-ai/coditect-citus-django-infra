@@ -40,7 +40,7 @@ Phase 0 (Project Foundation) has been successfully completed with all 18 core ta
 **Status:** Complete
 **Directories Created:**
 ```
-terraform/
+opentofu/
 ├── modules/ (gke, citus, redis, networking, monitoring)
 └── environments/ (dev, staging, production)
 kubernetes/
@@ -342,7 +342,7 @@ coditect-citus-django-infra/
 │   └── services/
 ├── monitoring/
 ├── scripts/
-├── terraform/
+├── opentofu/
 │   ├── environments/
 │   │   ├── dev/
 │   │   ├── production/

@@ -3,7 +3,7 @@ name: OpenTofu Plan
 on:
   pull_request:
     paths:
-      - 'terraform/**'
+      - 'opentofu/**'
     types: [opened, synchronize, reopened]
 
 env:
@@ -43,19 +43,19 @@ jobs:
 
       - name: Initialize OpenTofu
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu init
 
       - name: Create execution plan
         id: plan
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu plan -no-color -out=tfplan 2>&1 | tee plan.txt
         continue-on-error: true
 
       - name: Save plan output
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu show -no-color tfplan > plan-readable.txt
 
       - name: Upload plan artifacts
@@ -63,8 +63,8 @@ jobs:
         with:
           name: tofu-plan-${{ matrix.environment }}
           path: |
-            terraform/environments/${{ matrix.environment }}/tfplan
-            terraform/environments/${{ matrix.environment }}/plan-readable.txt
+            opentofu/environments/${{ matrix.environment }}/tfplan
+            opentofu/environments/${{ matrix.environment }}/plan-readable.txt
           retention-days: 30
 
       - name: Comment PR with plan
@@ -75,7 +75,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const planPath = 'terraform/environments/${{ matrix.environment }}/plan.txt';
+            const planPath = 'opentofu/environments/${{ matrix.environment }}/plan.txt';
             const plan = fs.readFileSync(planPath, 'utf8');
 
             const output = `### OpenTofu Plan - \`${{ matrix.environment }}\` Environment

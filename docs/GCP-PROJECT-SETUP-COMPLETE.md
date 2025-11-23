@@ -288,9 +288,9 @@ See: **[docs/GCP-INFRASTRUCTURE-INVENTORY.md](GCP-INFRASTRUCTURE-INVENTORY.md)**
 - Integrate Secret Manager
 
 **Week 2: Environment Configurations** (P1-T03)
-- Development environment (terraform/environments/dev/)
-- Staging environment (terraform/environments/staging/)
-- Production environment (terraform/environments/production/)
+- Development environment (opentofu/environments/dev/)
+- Staging environment (opentofu/environments/staging/)
+- Production environment (opentofu/environments/production/)
 - State backend configuration (GCS)
 
 **Week 3: Kubernetes Base** (P1-T04)
@@ -361,7 +361,7 @@ gcloud auth application-default print-access-token
 
 ```bash
 # Navigate to Terraform directory
-cd terraform/environments/dev
+cd opentofu/environments/dev
 
 # Copy example variables
 cp terraform.tfvars.example terraform.tfvars

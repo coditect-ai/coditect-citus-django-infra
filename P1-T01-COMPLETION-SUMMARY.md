@@ -133,9 +133,9 @@ Successfully completed all 5 subtasks for P1-T01 Environment Setup, providing a 
 ### 5. Terraform Environment Configuration
 
 **Files:**
-- `terraform/environments/dev/terraform.tfvars.example`
-- `terraform/environments/staging/terraform.tfvars.example`
-- `terraform/environments/production/terraform.tfvars.example`
+- `opentofu/environments/dev/terraform.tfvars.example`
+- `opentofu/environments/staging/terraform.tfvars.example`
+- `opentofu/environments/production/terraform.tfvars.example`
 
 **Configuration Sections:**
 1. **GCP Project**: Project ID, region, zone
@@ -236,7 +236,7 @@ Successfully completed all 5 subtasks for P1-T01 Environment Setup, providing a 
 export GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/keys/coditect-dev-terraform-key.json
 
 # 5. Configure Terraform
-cd terraform/environments/dev
+cd opentofu/environments/dev
 cp terraform.tfvars.example terraform.tfvars
 # Edit terraform.tfvars with actual values
 
@@ -319,9 +319,9 @@ curl http://localhost:8000/api/v1/health/
 - ✅ `scripts/iam-setup.sh` (300 lines)
 - ✅ `scripts/install-tools.sh` (450 lines)
 - ✅ `scripts/verify-tools.sh` (500 lines)
-- ✅ `terraform/environments/dev/terraform.tfvars.example` (300 lines)
-- ✅ `terraform/environments/staging/terraform.tfvars.example` (250 lines)
-- ✅ `terraform/environments/production/terraform.tfvars.example` (400 lines)
+- ✅ `opentofu/environments/dev/terraform.tfvars.example` (300 lines)
+- ✅ `opentofu/environments/staging/terraform.tfvars.example` (250 lines)
+- ✅ `opentofu/environments/production/terraform.tfvars.example` (400 lines)
 - ✅ `docs/LOCAL-DEVELOPMENT.md` (600 lines)
 
 ### Modified

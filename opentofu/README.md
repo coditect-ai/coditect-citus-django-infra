@@ -9,7 +9,7 @@ This directory contains all Terraform configurations for provisioning and managi
 ## Directory Structure
 
 ```
-terraform/
+opentofu/
 ├── modules/                    # Reusable Terraform modules
 │   ├── gke/                   # Google Kubernetes Engine cluster
 │   ├── cloudsql/              # Cloud SQL PostgreSQL with Citus

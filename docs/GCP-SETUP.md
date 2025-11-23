@@ -38,7 +38,7 @@ gcloud components install kubectl
 # Install Terraform
 brew install terraform  # macOS
 # OR
-wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
+wget https://releases.hashicorp.com/opentofu/1.6.0/terraform_1.6.0_linux_amd64.zip
 ```
 
 ### GCP Account Requirements
@@ -460,7 +460,7 @@ After completing setup, verify:
 
 1. **Run Terraform:** Initialize infrastructure as code
    ```bash
-   cd terraform/environments/dev
+   cd opentofu/environments/dev
    terraform init
    terraform plan
    terraform apply

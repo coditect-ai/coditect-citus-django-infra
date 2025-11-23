@@ -38,7 +38,7 @@
 
 - [x] Create coditect-citus-django-infra repository on GitHub
 - [x] Setup .gitignore for Python (*.pyc, __pycache__, .env, venv/)
-- [x] Setup .gitignore for Terraform (*.tfstate, .terraform/)
+- [x] Setup .gitignore for Terraform (*.tfstate, .opentofu/)
 - [x] Setup .gitignore for Kubernetes (secrets/)
 - [ ] Configure branch protection rules (require PR, 1 approval, tests pass)
 - [ ] Setup GitHub Actions runners (self-hosted or GitHub-hosted)
@@ -53,7 +53,7 @@
 **Time Estimate:** 4 hours
 **Dependencies:** Task 0.1
 
-- [x] Create terraform/ directory structure (modules/, environments/)
+- [x] Create opentofu/ directory structure (modules/, environments/)
 - [x] Create kubernetes/ directory (base/, services/, ingress/, monitoring/)
 - [x] Create django/ directory (coditect_platform/)
 - [x] Create docs/ directory (ARCHITECTURE.md, DEPLOYMENT.md, etc.)
@@ -343,7 +343,7 @@
 **Time Estimate:** 4 hours
 **Dependencies:** Task 0.18
 
-- [ ] Create terraform/modules/gke/ directory
+- [ ] Create opentofu/modules/gke/ directory
 - [ ] Create variables.tf (cluster_name, region, zones, node_count, etc.)
 - [ ] Create outputs.tf (cluster_endpoint, cluster_ca_certificate)
 - [ ] Create versions.tf (required providers, versions)
@@ -376,7 +376,7 @@
 **Time Estimate:** 4 hours
 **Dependencies:** Task 1.2
 
-- [ ] Create terraform/modules/gke/examples/ directory
+- [ ] Create opentofu/modules/gke/examples/ directory
 - [ ] Create example usage in examples/basic/
 - [ ] Run terraform init in examples/basic/
 - [ ] Run terraform validate
@@ -392,7 +392,7 @@
 **Time Estimate:** 4 hours
 **Dependencies:** Task 1.1
 
-- [ ] Create terraform/modules/cloudsql/ directory
+- [ ] Create opentofu/modules/cloudsql/ directory
 - [ ] Create variables.tf (instance_name, database_version, tier, etc.)
 - [ ] Create outputs.tf (connection_name, private_ip_address)
 - [ ] Create versions.tf
@@ -440,7 +440,7 @@
 **Time Estimate:** 4 hours
 **Dependencies:** Task 1.1
 
-- [ ] Create terraform/modules/networking/ directory
+- [ ] Create opentofu/modules/networking/ directory
 - [ ] Create variables.tf (vpc_name, subnets, region, etc.)
 - [ ] Create outputs.tf (vpc_id, subnet_ids)
 - [ ] Create versions.tf
@@ -489,7 +489,7 @@
 **Time Estimate:** 4 hours
 **Dependencies:** Task 1.1
 
-- [ ] Create terraform/modules/redis/ directory
+- [ ] Create opentofu/modules/redis/ directory
 - [ ] Create variables.tf (instance_name, memory_size_gb, etc.)
 - [ ] Create outputs.tf (host, port, auth_string)
 - [ ] Create versions.tf
@@ -536,7 +536,7 @@
 **Time Estimate:** 3 hours
 **Dependencies:** Task 1.7
 
-- [ ] Create terraform/modules/firewall/ directory
+- [ ] Create opentofu/modules/firewall/ directory
 - [ ] Create variables.tf (vpc_name, allowed_ports, etc.)
 - [ ] Create outputs.tf (rule_ids)
 - [ ] Create versions.tf
@@ -582,7 +582,7 @@
 **Time Estimate:** 3 hours
 **Dependencies:** Task 1.1
 
-- [ ] Create terraform/modules/secrets/ directory
+- [ ] Create opentofu/modules/secrets/ directory
 - [ ] Create variables.tf (secret_names, replication_policy)
 - [ ] Create outputs.tf (secret_ids)
 - [ ] Create versions.tf
@@ -630,7 +630,7 @@
 **Time Estimate:** 2 hours
 **Dependencies:** All Week 4 tasks
 
-- [ ] Create terraform/environments/dev/ directory
+- [ ] Create opentofu/environments/dev/ directory
 - [ ] Create main.tf (module invocations)
 - [ ] Create variables.tf (dev-specific values)
 - [ ] Create terraform.tfvars (actual values)
@@ -683,7 +683,7 @@
 **Time Estimate:** 2 hours
 **Dependencies:** Task 1.19
 
-- [ ] Create terraform/environments/staging/ directory
+- [ ] Create opentofu/environments/staging/ directory
 - [ ] Create main.tf
 - [ ] Create variables.tf
 - [ ] Create terraform.tfvars (production-like config)
@@ -733,7 +733,7 @@
 **Time Estimate:** 2 hours
 **Dependencies:** Task 1.22
 
-- [ ] Create terraform/environments/production/ directory
+- [ ] Create opentofu/environments/production/ directory
 - [ ] Create main.tf
 - [ ] Create variables.tf
 - [ ] Create terraform.tfvars (maximum redundancy)

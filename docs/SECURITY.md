@@ -182,7 +182,7 @@ CREATE POLICY tenant_isolation ON users
 **Firewall Rules:**
 
 ```hcl
-# terraform/modules/networking/firewall.tf
+# opentofu/modules/networking/firewall.tf
 
 # Allow HTTPS from internet
 resource "google_compute_firewall" "allow_https" {

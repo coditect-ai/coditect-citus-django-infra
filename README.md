@@ -34,7 +34,7 @@ Infrastructure-as-Code for deploying CODITECT's hyperscale multi-tenant architec
 coditect-citus-django-infra/
 ├── .coditect/               # Distributed intelligence (symlink to master)
 ├── .claude/                 # Claude Code compatibility (symlink)
-├── terraform/               # Infrastructure as Code
+├── opentofu/               # Infrastructure as Code
 │   ├── modules/            # Reusable Terraform modules
 │   │   ├── gke/           # GKE cluster configuration
 │   │   ├── citus/         # Citus coordinator + workers
@@ -108,7 +108,7 @@ gcloud auth application-default login
 gcloud config set project YOUR_PROJECT_ID
 
 # 3. Initialize Terraform
-cd terraform/environments/dev
+cd opentofu/environments/dev
 terraform init
 
 # 4. Review and apply infrastructure

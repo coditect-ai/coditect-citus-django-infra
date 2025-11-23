@@ -7,7 +7,7 @@ This directory contains GitHub Actions workflows for automating OpenTofu infrast
 ### 1. `tofu-validate.yml` - Validation & Security
 
 **Triggers:**
-- Pull requests that modify `terraform/**`
+- Pull requests that modify `opentofu/**`
 - Pushes to `main` branch
 
 **What it does:**
@@ -23,7 +23,7 @@ This directory contains GitHub Actions workflows for automating OpenTofu infrast
 ### 2. `tofu-plan.yml` - Infrastructure Planning
 
 **Triggers:**
-- Pull requests that modify `terraform/**`
+- Pull requests that modify `opentofu/**`
 
 **What it does:**
 - 📊 Creates execution plans for all environments
@@ -206,7 +206,7 @@ gcloud iam service-accounts add-iam-policy-binding \
 
 **Solution:**
 ```bash
-cd terraform/environments/dev
+cd opentofu/environments/dev
 tofu init -backend-config="bucket=PROJECT_ID-terraform-state"
 ```
 
@@ -243,7 +243,7 @@ tofu init -backend-config="bucket=PROJECT_ID-terraform-state"
 
 1. **Always run validation locally first:**
    ```bash
-   cd terraform/environments/dev
+   cd opentofu/environments/dev
    tofu fmt -recursive
    tofu validate
    ```

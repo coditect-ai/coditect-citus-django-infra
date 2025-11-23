@@ -161,7 +161,7 @@ done
 log_info "Enabled $ENABLED_COUNT/${#REQUIRED_APIS[@]} APIs"
 
 # Create output file with project details
-OUTPUT_FILE="terraform/environments/$ENVIRONMENT/.project-info"
+OUTPUT_FILE="opentofu/environments/$ENVIRONMENT/.project-info"
 log_info "Creating project info file: $OUTPUT_FILE"
 
 cat > "$OUTPUT_FILE" << EOF
@@ -183,8 +183,8 @@ TOTAL_APIS=${#REQUIRED_APIS[@]}
 
 # Next Steps
 # 1. Run: ./scripts/iam-setup.sh $ENVIRONMENT
-# 2. Configure terraform/environments/$ENVIRONMENT/terraform.tfvars
-# 3. Run: cd terraform/environments/$ENVIRONMENT && terraform init
+# 2. Configure opentofu/environments/$ENVIRONMENT/terraform.tfvars
+# 3. Run: cd opentofu/environments/$ENVIRONMENT && terraform init
 EOF
 
 log_info "Project info saved to: $OUTPUT_FILE"
@@ -203,5 +203,5 @@ echo ""
 log_info "Next steps:"
 echo "  1. Review project at: https://console.cloud.google.com/home/dashboard?project=$PROJECT_ID"
 echo "  2. Run IAM setup: ./scripts/iam-setup.sh $ENVIRONMENT"
-echo "  3. Configure Terraform variables in terraform/environments/$ENVIRONMENT/"
+echo "  3. Configure Terraform variables in opentofu/environments/$ENVIRONMENT/"
 echo ""

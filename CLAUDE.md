@@ -69,8 +69,8 @@ All CODITECT framework components (52 agents, 81 commands, 26 skills) are **dire
 
 ```
 coditect-citus-django-infra/
-├── terraform/               # Infrastructure as Code
-│   ├── modules/            # Reusable Terraform modules
+├── opentofu/               # Infrastructure as Code
+│   ├── modules/            # Reusable OpenTofu modules
 │   │   ├── gke/           # GKE cluster module
 │   │   ├── citus/         # Citus cluster module
 │   │   ├── redis/         # Redis cluster module
@@ -136,8 +136,8 @@ This repository has access to the complete CODITECT framework via `.coditect` sy
 
 1. **Read current infrastructure state:**
    ```bash
-   cd terraform/environments/dev
-   terraform show
+   cd opentofu/environments/dev
+   tofu show
    ```
 
 2. **Check Kubernetes cluster:**
@@ -155,9 +155,9 @@ This repository has access to the complete CODITECT framework via `.coditect` sy
 
 ### Terraform Standards
 
-- **Format:** Run `terraform fmt` before commit
-- **Validation:** Run `terraform validate` on all modules
-- **Planning:** Always run `terraform plan` before apply
+- **Format:** Run `tofu fmt` before commit
+- **Validation:** Run `tofu validate` on all modules
+- **Planning:** Always run `tofu plan` before apply
 - **State:** Never commit `terraform.tfstate` files
 - **Secrets:** Use GCP Secret Manager, never hardcode
 
@@ -184,16 +184,16 @@ This repository has access to the complete CODITECT framework via `.coditect` sy
 
 ```bash
 # Navigate to dev environment
-cd terraform/environments/dev
+cd opentofu/environments/dev
 
-# Initialize Terraform
-terraform init
+# Initialize OpenTofu
+tofu init
 
 # Plan changes
-terraform plan -out=tfplan
+tofu plan -out=tfplan
 
 # Apply changes
-terraform apply tfplan
+tofu apply tfplan
 ```
 
 ### Deploy Kubernetes Resources
@@ -212,13 +212,13 @@ kubectl get pods -A
 ### Add Citus Worker Node
 
 ```bash
-# Update Terraform configuration
-cd terraform/modules/citus
+# Update OpenTofu configuration
+cd opentofu/modules/citus
 # Edit variables.tf to increase worker_count
 
 # Apply change
 cd ../../environments/production
-terraform apply
+tofu apply
 
 # Verify in Citus
 psql -h citus-coordinator -c "SELECT * FROM citus_get_active_worker_nodes();"

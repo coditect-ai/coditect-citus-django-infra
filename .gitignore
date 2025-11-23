@@ -2,7 +2,7 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
-.terraform/
+.opentofu/
 .terraform.lock.hcl
 tfplan
 crash.log
@@ -47,3 +47,4 @@ logs/
 *.tmp
 *.bak
 *.backup
+.terraform/

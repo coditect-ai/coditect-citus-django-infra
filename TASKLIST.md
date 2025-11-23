@@ -25,12 +25,12 @@
 ### Infrastructure as Code (Weeks 2-3)
 
 - [x] **P1-T02:** Create OpenTofu Modules (10 days) ✅ **COMPLETED**
-  - [x] GKE cluster module (multi-zone, auto-scaling) - terraform/modules/gke/
-  - [x] Cloud SQL PostgreSQL module (HA configuration) - terraform/modules/cloudsql/
-  - [x] Redis cluster module - terraform/modules/redis/
-  - [x] VPC networking module - terraform/modules/networking/
-  - [x] Firewall rules module - terraform/modules/firewall/
-  - [x] Secret Manager integration - terraform/modules/secrets/
+  - [x] GKE cluster module (multi-zone, auto-scaling) - opentofu/modules/gke/
+  - [x] Cloud SQL PostgreSQL module (HA configuration) - opentofu/modules/cloudsql/
+  - [x] Redis cluster module - opentofu/modules/redis/
+  - [x] VPC networking module - opentofu/modules/networking/
+  - [x] Firewall rules module - opentofu/modules/firewall/
+  - [x] Secret Manager integration - opentofu/modules/secrets/
   - [x] **Migration:** Terraform → OpenTofu v1.10.7 (due to BUSL licensing)
   - [x] **Validation:** All modules pass `tofu validate`
   - [x] **Total:** 6 modules, 4,172 lines of HCL code

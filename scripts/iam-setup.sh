@@ -189,7 +189,7 @@ else
 fi
 
 # Create environment variables file
-ENV_FILE="terraform/environments/$ENVIRONMENT/.env.iam"
+ENV_FILE="opentofu/environments/$ENVIRONMENT/.env.iam"
 log_info "Creating IAM environment file: $ENV_FILE"
 
 cat > "$ENV_FILE" << EOF
@@ -234,7 +234,7 @@ log_info "Next steps:"
 echo "  1. Export credentials: export GOOGLE_APPLICATION_CREDENTIALS=$TERRAFORM_KEY"
 echo "  2. Source IAM config: source $ENV_FILE"
 echo "  3. Verify access: gcloud auth list"
-echo "  4. Configure Terraform: cd terraform/environments/$ENVIRONMENT"
+echo "  4. Configure Terraform: cd opentofu/environments/$ENVIRONMENT"
 echo ""
 log_warn "SECURITY NOTICE:"
 echo "  - Service account keys are stored in: $KEYS_DIR"

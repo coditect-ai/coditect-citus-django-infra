@@ -3,13 +3,13 @@ name: OpenTofu Validate
 on:
   pull_request:
     paths:
-      - 'terraform/**'
+      - 'opentofu/**'
       - '.github/workflows/tofu-*.yml'
   push:
     branches:
       - main
     paths:
-      - 'terraform/**'
+      - 'opentofu/**'
       - '.github/workflows/tofu-*.yml'
 
 env:
@@ -37,12 +37,12 @@ jobs:
 
       - name: Format check
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu fmt -check -recursive
 
       - name: Initialize OpenTofu
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           # Disable backend for validation (no GCS access in CI)
           if [ -f backend.tf ]; then
             mv backend.tf backend.tf.bak
@@ -51,13 +51,13 @@ jobs:
 
       - name: Validate configuration
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           tofu validate
 
       - name: Restore backend configuration
         if: always()
         run: |
-          cd terraform/environments/${{ matrix.environment }}
+          cd opentofu/environments/${{ matrix.environment }}
           if [ -f backend.tf.bak ]; then
             mv backend.tf.bak backend.tf
           fi
@@ -74,7 +74,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'config'
-          scan-ref: 'terraform/'
+          scan-ref: 'opentofu/'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
