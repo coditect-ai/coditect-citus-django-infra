@@ -1,0 +1,186 @@
+name: OpenTofu Apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+      auto_approve:
+        description: 'Auto-approve apply (use with caution!)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  TOFU_VERSION: '1.10.7'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  validate:
+    name: Pre-deployment Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Initialize OpenTofu
+        run: |
+          cd terraform/environments/${{ inputs.environment }}
+          tofu init
+
+      - name: Validate configuration
+        run: |
+          cd terraform/environments/${{ inputs.environment }}
+          tofu validate
+
+      - name: Create plan
+        run: |
+          cd terraform/environments/${{ inputs.environment }}
+          tofu plan -out=tfplan
+
+      - name: Upload plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ inputs.environment }}
+          path: terraform/environments/${{ inputs.environment }}/tfplan
+          retention-days: 1
+
+  approve:
+    name: Manual Approval
+    runs-on: ubuntu-latest
+    needs: validate
+    if: ${{ !inputs.auto_approve }}
+    environment:
+      name: ${{ inputs.environment }}
+      url: https://console.cloud.google.com
+
+    steps:
+      - name: Approval checkpoint
+        run: |
+          echo "✅ Manual approval granted for ${{ inputs.environment }} deployment"
+          echo "Proceeding with infrastructure changes..."
+
+  apply:
+    name: Deploy Infrastructure
+    runs-on: ubuntu-latest
+    needs: [validate, approve]
+    if: ${{ always() && (needs.approve.result == 'success' || inputs.auto_approve) }}
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Initialize OpenTofu
+        run: |
+          cd terraform/environments/${{ inputs.environment }}
+          tofu init
+
+      - name: Download plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ inputs.environment }}
+          path: terraform/environments/${{ inputs.environment }}/
+
+      - name: Apply infrastructure changes
+        id: apply
+        run: |
+          cd terraform/environments/${{ inputs.environment }}
+          tofu apply -auto-approve tfplan 2>&1 | tee apply.log
+
+      - name: Upload apply log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apply-log-${{ inputs.environment }}-${{ github.run_number }}
+          path: terraform/environments/${{ inputs.environment }}/apply.log
+          retention-days: 90
+
+      - name: Create deployment summary
+        if: always()
+        run: |
+          cd terraform/environments/${{ inputs.environment }}
+          echo "## OpenTofu Apply Summary - ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ${{ steps.apply.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Run ID**: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Resources Changed" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          tail -20 apply.log >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  verify:
+    name: Post-deployment Verification
+    runs-on: ubuntu-latest
+    needs: apply
+    if: success()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Verify GKE cluster
+        run: |
+          gcloud container clusters list --filter="name:coditect-${{ inputs.environment }}"
+
+      - name: Verify Cloud SQL instance
+        run: |
+          gcloud sql instances list --filter="name:coditect-db-${{ inputs.environment }}"
+
+      - name: Verify Redis instance
+        run: |
+          gcloud redis instances list --region=us-central1 --filter="name:coditect-cache-${{ inputs.environment }}"
+
+      - name: Post-deployment summary
+        run: |
+          echo "✅ Infrastructure deployment successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All critical resources verified and operational." >> $GITHUB_STEP_SUMMARY

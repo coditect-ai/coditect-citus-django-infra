@@ -34,8 +34,8 @@ updates:
       prefix: "chore(ci)"
       include: "scope"
 
-  # Terraform
-  - package-ecosystem: "terraform"
+  # OpenTofu (Infrastructure as Code)
+  - package-ecosystem: "terraform"  # Dependabot uses 'terraform' for both Terraform and OpenTofu
     directory: "/terraform"
     schedule:
       interval: "weekly"
@@ -46,7 +46,8 @@ updates:
       - "coditect-infrastructure-team"
     labels:
       - "dependencies"
-      - "terraform"
+      - "opentofu"
+      - "infrastructure"
     commit-message:
       prefix: "chore(infra)"
       include: "scope"
