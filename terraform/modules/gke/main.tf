@@ -141,9 +141,9 @@ resource "google_container_cluster" "primary" {
 
 # Managed Node Pool with Auto-scaling
 resource "google_container_node_pool" "primary_nodes" {
-  name       = local.node_pool_name
-  location   = var.region
-  cluster    = google_container_cluster.primary.name
+  name     = local.node_pool_name
+  location = var.region
+  cluster  = google_container_cluster.primary.name
 
   # Initial node count per zone
   initial_node_count = var.initial_node_count

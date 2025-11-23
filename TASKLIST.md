@@ -1,8 +1,9 @@
 # TASKLIST - coditect-citus-django-infra
 
 **Project:** CODITECT Citus Django Infrastructure
-**Status:** Phase 1 - Foundation
+**Status:** Phase 1 - Foundation (60% Complete)
 **Last Updated:** November 23, 2025
+**Recent Milestone:** ✅ OpenTofu Migration Completed (migrated from Terraform due to BUSL licensing)
 
 ---
 
@@ -17,22 +18,27 @@
   - [x] Install required tools (scripts/install-tools.sh, scripts/verify-tools.sh)
   - [x] Configure local development environment (docs/LOCAL-DEVELOPMENT.md, .env.example updated)
 
-### Terraform Infrastructure (Weeks 2-3)
+### Infrastructure as Code (Weeks 2-3)
 
-- [ ] **P1-T02:** Create Terraform Modules (10 days)
-  - [ ] GKE cluster module (multi-zone, auto-scaling)
-  - [ ] Cloud SQL PostgreSQL module (HA configuration)
-  - [ ] Redis cluster module
-  - [ ] VPC networking module
-  - [ ] Firewall rules module
-  - [ ] Secret Manager integration
+- [x] **P1-T02:** Create OpenTofu Modules (10 days) ✅ **COMPLETED**
+  - [x] GKE cluster module (multi-zone, auto-scaling) - terraform/modules/gke/
+  - [x] Cloud SQL PostgreSQL module (HA configuration) - terraform/modules/cloudsql/
+  - [x] Redis cluster module - terraform/modules/redis/
+  - [x] VPC networking module - terraform/modules/networking/
+  - [x] Firewall rules module - terraform/modules/firewall/
+  - [x] Secret Manager integration - terraform/modules/secrets/
+  - [x] **Migration:** Terraform → OpenTofu v1.10.7 (due to BUSL licensing)
+  - [x] **Validation:** All modules pass `tofu validate`
+  - [x] **Total:** 6 modules, 4,172 lines of HCL code
 
-- [ ] **P1-T03:** Environment Configurations (5 days)
-  - [ ] Development environment (dev/)
-  - [ ] Staging environment (staging/)
-  - [ ] Production environment (production/)
-  - [ ] Environment-specific variables
-  - [ ] State backend configuration (GCS)
+- [x] **P1-T03:** Environment Configurations (5 days) ✅ **COMPLETED**
+  - [x] Development environment (dev/) - OpenTofu validation: PASSED ✅
+  - [x] Staging environment (staging/) - OpenTofu validation: PASSED ✅
+  - [x] Production environment (production/) - OpenTofu validation: PASSED ✅
+  - [x] Environment-specific variables (terraform.tfvars files)
+  - [x] State backend configuration (GCS) - backend.tf files created
+  - [x] **Fixed Issues:** Redis persistence_mode, firewall arguments, secrets module interface, outputs
+  - **Note:** Backend configs temporarily disabled (.bak) for validation - restore before deployment
 
 ### Kubernetes Base Configuration (Week 4)
 
@@ -43,12 +49,13 @@
   - [ ] Network policies
   - [ ] Resource quotas and limits
 
-- [ ] **P1-T05:** CI/CD Pipeline (5 days)
-  - [ ] GitHub Actions for Terraform validation
+- [ ] **P1-T05:** CI/CD Pipeline (5 days) 🔄 **IN PROGRESS**
+  - [ ] GitHub Actions for OpenTofu validation (update from terraform commands)
   - [ ] Automated kubectl apply workflows
   - [ ] Deployment approval gates
   - [ ] Rollback procedures
   - [ ] Integration tests
+  - **Action Needed:** Update all `terraform` commands to `tofu` in CI/CD workflows
 
 ---
 

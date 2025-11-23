@@ -2,7 +2,7 @@
 # Centralized secrets storage with IAM bindings and rotation policies
 
 locals {
-  secret_prefix = "${var.environment}"
+  secret_prefix = var.environment
 
   common_labels = {
     environment = var.environment
@@ -113,7 +113,11 @@ resource "google_secret_manager_secret_iam_member" "deployment_admin" {
 
 # IAM binding for human administrators (view only)
 resource "google_secret_manager_secret_iam_member" "admin_viewers" {
-  for_each = length(var.admin_members) > 0 ? toset([for s in keys(local.all_secrets) : for m in var.admin_members : "${s}:${m}"]) : toset([])
+  for_each = length(var.admin_members) > 0 ? toset(flatten([
+    for s in keys(local.all_secrets) : [
+      for m in var.admin_members : "${s}:${m}"
+    ]
+  ])) : toset([])
 
   project   = var.project_id
   secret_id = google_secret_manager_secret.secrets[split(":", each.value)[0]].id

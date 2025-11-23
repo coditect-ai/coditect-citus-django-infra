@@ -56,7 +56,7 @@ resource "google_compute_firewall" "allow_health_checks" {
   }
 
   source_ranges = [
-    "130.211.0.0/22",  # GCP Health Check ranges
+    "130.211.0.0/22", # GCP Health Check ranges
     "35.191.0.0/16",
   ]
 

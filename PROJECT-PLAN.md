@@ -83,7 +83,7 @@ The project is structured in 6 phases over 20-24 weeks:
 |-----------|-----------|---------|
 | **Cloud Platform** | Google Cloud Platform (GCP) | Cloud infrastructure |
 | **Orchestration** | Kubernetes (GKE) | Container orchestration |
-| **Infrastructure as Code** | Terraform | GCP resource provisioning |
+| **Infrastructure as Code** | OpenTofu v1.10.7 | GCP resource provisioning (open-source, MPL 2.0) |
 | **API Gateway** | Kong | Request routing, rate limiting |
 | **Load Balancer** | GCP Load Balancer | Traffic distribution |
 | **Caching** | Redis Cluster | Distributed caching |
@@ -269,7 +269,8 @@ The project is structured in 6 phases over 20-24 weeks:
 
 **Duration:** 4 weeks (Weeks 3-6)
 **Team:** DevOps Engineer, Cloud Architect
-**Goal:** Deploy production-ready infrastructure on GCP using Terraform
+**Goal:** Deploy production-ready infrastructure on GCP using OpenTofu
+**Status:** IN PROGRESS (60% Complete - OpenTofu Migration Completed ✅)
 
 ### Objectives
 
@@ -282,6 +283,10 @@ The project is structured in 6 phases over 20-24 weeks:
 
 ### Architecture Decisions
 
+- **Infrastructure as Code:** OpenTofu v1.10.7 (migrated from Terraform due to BUSL licensing)
+  - **Reason:** HashiCorp changed Terraform license to BUSL (Business Source License) in August 2023
+  - **Solution:** OpenTofu is a Linux Foundation fork, 100% compatible, MPL 2.0 licensed
+  - **Migration Status:** ✅ Completed (November 23, 2025) - All modules validated successfully
 - **Initial Database:** Cloud SQL PostgreSQL (HA) - easier to manage initially
 - **Migration Path:** Migrate to self-managed Citus when reaching 10K+ tenants
 - **Networking:** Private GKE cluster with VPC peering to Cloud SQL
@@ -289,7 +294,7 @@ The project is structured in 6 phases over 20-24 weeks:
 
 ### Tasks
 
-#### Week 3: Terraform Modules - Part 1
+#### Week 3: OpenTofu Modules - Part 1 ✅ COMPLETED
 
 1. **GKE Cluster Module**
    - Multi-zone GKE cluster (us-central1-a, us-central1-b, us-central1-c)
@@ -314,7 +319,7 @@ The project is structured in 6 phases over 20-24 weeks:
    - Cloud NAT for outbound internet access
    - Private Google Access enabled
 
-#### Week 4: Terraform Modules - Part 2
+#### Week 4: OpenTofu Modules - Part 2 ✅ COMPLETED
 
 4. **Redis Cluster Module**
    - Memorystore Redis instance (5GB, HA)
@@ -337,37 +342,41 @@ The project is structured in 6 phases over 20-24 weeks:
    - Configure workload identity for secret access
    - Setup secret rotation policies
 
-#### Week 5: Environment Configurations
+#### Week 5: Environment Configurations ✅ COMPLETED
 
-7. **Development Environment**
+7. **Development Environment** ✅
    - terraform/environments/dev/
    - Small instance sizes (cost optimization)
    - Single-zone GKE cluster
    - Non-HA Cloud SQL instance
    - Auto-delete unused resources
+   - OpenTofu validation: PASSED
 
-8. **Staging Environment**
+8. **Staging Environment** ✅
    - terraform/environments/staging/
    - Production-like configuration
    - Multi-zone GKE cluster
    - HA Cloud SQL instance
    - Blue-green deployment capability
+   - OpenTofu validation: PASSED
 
-9. **Production Environment**
+9. **Production Environment** ✅
    - terraform/environments/production/
    - Maximum redundancy and HA
    - Multi-zone, multi-region planning
    - Strict change management
    - Comprehensive monitoring
+   - OpenTofu validation: PASSED
 
 #### Week 6: CI/CD & Kubernetes Base
 
-10. **Terraform CI/CD Pipeline**
-    - GitHub Actions workflow for terraform validate
-    - Automated terraform plan on PR
-    - Manual approval for terraform apply
+10. **OpenTofu CI/CD Pipeline** 🔄 IN PROGRESS
+    - GitHub Actions workflow for tofu validate
+    - Automated tofu plan on PR
+    - Manual approval for tofu apply
     - State stored in GCS bucket with versioning
-    - Drift detection (daily terraform plan)
+    - Drift detection (daily tofu plan)
+    - **Note:** Migration from terraform to tofu commands needed in CI/CD
 
 11. **Kubernetes Base Configuration**
     - Namespaces: coditect-dev, coditect-staging, coditect-production
@@ -376,27 +385,30 @@ The project is structured in 6 phases over 20-24 weeks:
     - Resource quotas per namespace
     - LimitRanges for pod resource constraints
 
-12. **Infrastructure Validation**
-    - Terraform validation tests
-    - GKE cluster health checks
-    - Database connectivity tests
-    - Redis connectivity tests
-    - Cost analysis and optimization review
+12. **Infrastructure Validation** ✅ COMPLETED (Validation Only)
+    - OpenTofu validation tests ✅ (all 3 environments passing)
+    - GKE cluster health checks ⏸️ (pending deployment)
+    - Database connectivity tests ⏸️ (pending deployment)
+    - Redis connectivity tests ⏸️ (pending deployment)
+    - Cost analysis and optimization review ⏸️ (pending deployment)
 
 ### Deliverables
 
-- ✅ Complete Terraform modules for all infrastructure components
-- ✅ Three environments (dev, staging, production) operational
-- ✅ CI/CD pipeline for infrastructure changes
-- ✅ Kubernetes cluster with base configuration
-- ✅ All resources deployed and validated
+- ✅ Complete OpenTofu modules for all infrastructure components (6 modules, 4,172 lines)
+- ✅ OpenTofu migration from Terraform completed (November 23, 2025)
+- ✅ Three environments (dev, staging, production) configured and validated
+- 🔄 CI/CD pipeline for infrastructure changes (needs tofu command updates)
+- ⏸️ Kubernetes cluster with base configuration (pending - P1-T04)
+- ⏸️ All resources deployed to GCP (pending - awaiting deployment decision)
 
 ### Success Criteria
 
-- [ ] GKE cluster running in all environments
-- [ ] Cloud SQL PostgreSQL accessible from GKE
-- [ ] Redis cluster operational and accessible
-- [ ] Terraform apply succeeds without errors
+- [x] OpenTofu modules created and validated ✅
+- [x] All 3 environments pass `tofu validate` ✅
+- [ ] GKE cluster running in all environments ⏸️
+- [ ] Cloud SQL PostgreSQL accessible from GKE ⏸️
+- [ ] Redis cluster operational and accessible ⏸️
+- [ ] OpenTofu apply succeeds without errors in dev environment ⏸️
 - [ ] Infrastructure costs within budget ($800/month for dev)
 
 ---

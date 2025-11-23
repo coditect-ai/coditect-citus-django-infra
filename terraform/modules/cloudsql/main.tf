@@ -14,22 +14,22 @@ locals {
 
   # Database flags for Citus configuration
   citus_database_flags = {
-    "shared_preload_libraries" = "citus"
-    "max_connections"          = var.max_connections
-    "shared_buffers"           = var.shared_buffers
-    "effective_cache_size"     = var.effective_cache_size
-    "maintenance_work_mem"     = var.maintenance_work_mem
-    "checkpoint_completion_target" = "0.9"
-    "wal_buffers"              = "16MB"
-    "default_statistics_target" = "100"
-    "random_page_cost"         = "1.1" # For SSD
-    "effective_io_concurrency" = "200" # For SSD
-    "work_mem"                 = var.work_mem
-    "min_wal_size"             = "1GB"
-    "max_wal_size"             = "4GB"
-    "max_worker_processes"     = "8"
-    "max_parallel_workers_per_gather" = "4"
-    "max_parallel_workers"     = "8"
+    "shared_preload_libraries"         = "citus"
+    "max_connections"                  = var.max_connections
+    "shared_buffers"                   = var.shared_buffers
+    "effective_cache_size"             = var.effective_cache_size
+    "maintenance_work_mem"             = var.maintenance_work_mem
+    "checkpoint_completion_target"     = "0.9"
+    "wal_buffers"                      = "16MB"
+    "default_statistics_target"        = "100"
+    "random_page_cost"                 = "1.1" # For SSD
+    "effective_io_concurrency"         = "200" # For SSD
+    "work_mem"                         = var.work_mem
+    "min_wal_size"                     = "1GB"
+    "max_wal_size"                     = "4GB"
+    "max_worker_processes"             = "8"
+    "max_parallel_workers_per_gather"  = "4"
+    "max_parallel_workers"             = "8"
     "max_parallel_maintenance_workers" = "4"
   }
 }
@@ -42,11 +42,11 @@ resource "google_sql_database_instance" "postgres" {
   deletion_protection = var.deletion_protection
 
   settings {
-    tier              = var.tier
-    availability_type = var.availability_type
-    disk_type         = "PD_SSD"
-    disk_size         = var.disk_size_gb
-    disk_autoresize   = true
+    tier                  = var.tier
+    availability_type     = var.availability_type
+    disk_type             = "PD_SSD"
+    disk_size             = var.disk_size_gb
+    disk_autoresize       = true
     disk_autoresize_limit = var.disk_autoresize_limit
 
     # IP configuration
@@ -119,9 +119,9 @@ resource "google_sql_database_instance" "postgres" {
 
 # Default PostgreSQL database
 resource "google_sql_database" "default" {
-  name     = var.database_name
-  instance = google_sql_database_instance.postgres.name
-  charset  = "UTF8"
+  name      = var.database_name
+  instance  = google_sql_database_instance.postgres.name
+  charset   = "UTF8"
   collation = "en_US.UTF8"
 }
 
@@ -129,9 +129,9 @@ resource "google_sql_database" "default" {
 resource "google_sql_database" "citus" {
   count = var.database_name != "citus" ? 1 : 0
 
-  name     = "citus"
-  instance = google_sql_database_instance.postgres.name
-  charset  = "UTF8"
+  name      = "citus"
+  instance  = google_sql_database_instance.postgres.name
+  charset   = "UTF8"
   collation = "en_US.UTF8"
 }
 

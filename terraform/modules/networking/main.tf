@@ -79,13 +79,8 @@ resource "google_compute_router_nat" "nat" {
   nat_ip_allocate_option = var.nat_ip_allocate_option
 
   # Manual NAT IPs (if specified)
-  dynamic "nat_ips" {
-    for_each = var.nat_ips
-
-    content {
-      name = nat_ips.value
-    }
-  }
+  # nat_ips expects a list of self_links to google_compute_address resources
+  nat_ips = length(var.nat_ips) > 0 ? var.nat_ips : null
 
   # Source subnetwork configuration
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"

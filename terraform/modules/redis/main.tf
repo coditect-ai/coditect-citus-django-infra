@@ -14,11 +14,11 @@ locals {
 
 # Cloud Memorystore Redis Instance
 resource "google_redis_instance" "cache" {
-  name               = local.instance_name
-  tier               = var.tier
-  memory_size_gb     = var.memory_size_gb
-  region             = var.region
-  location_id        = var.location_id
+  name                    = local.instance_name
+  tier                    = var.tier
+  memory_size_gb          = var.memory_size_gb
+  region                  = var.region
+  location_id             = var.location_id
   alternative_location_id = var.alternative_location_id
 
   # Redis version
@@ -29,7 +29,7 @@ resource "google_redis_instance" "cache" {
   connect_mode       = var.connect_mode
 
   # High availability configuration (for STANDARD_HA tier)
-  replica_count = var.tier == "STANDARD_HA" ? var.replica_count : null
+  replica_count      = var.tier == "STANDARD_HA" ? var.replica_count : null
   read_replicas_mode = var.tier == "STANDARD_HA" && var.replica_count > 0 ? var.read_replicas_mode : null
 
   # Security

@@ -75,7 +75,7 @@ variable "max_node_count" {
 variable "machine_type" {
   description = "GKE node machine type"
   type        = string
-  default     = "n1-standard-8 # Production performance
+  default     = "n1-standard-8" # Production performance
 }
 
 variable "disk_size_gb" {

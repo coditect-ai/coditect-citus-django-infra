@@ -22,9 +22,9 @@ output "subnet_cidr" {
   value       = module.networking.subnet_cidr
 }
 
-output "nat_ip_addresses" {
-  description = "Cloud NAT external IP addresses"
-  value       = module.networking.nat_ip_addresses
+output "nat_ip_address" {
+  description = "Cloud NAT external IP address allocation method"
+  value       = module.networking.nat_ip_address
 }
 
 # GKE Cluster Outputs
@@ -50,10 +50,8 @@ output "gke_cluster_location" {
   value       = module.gke.cluster_location
 }
 
-output "gke_service_account_email" {
-  description = "Service account email for GKE nodes"
-  value       = module.gke.service_account_email
-}
+# Note: GKE service account is specified via variables, not output by module
+# If needed, can be retrieved via: var.gke_service_account_email
 
 # Cloud SQL Outputs
 output "cloudsql_instance_name" {
@@ -63,7 +61,7 @@ output "cloudsql_instance_name" {
 
 output "cloudsql_connection_name" {
   description = "Cloud SQL connection name (for Cloud SQL Proxy)"
-  value       = module.cloudsql.connection_name
+  value       = module.cloudsql.instance_connection_name
 }
 
 output "cloudsql_private_ip" {
@@ -118,7 +116,7 @@ output "kubectl_config_command" {
 
 output "cloudsql_proxy_command" {
   description = "Command to start Cloud SQL Proxy"
-  value       = "cloud_sql_proxy -instances=${module.cloudsql.connection_name}=tcp:5432"
+  value       = "cloud_sql_proxy -instances=${module.cloudsql.instance_connection_name}=tcp:5432"
 }
 
 output "redis_connection_string" {
