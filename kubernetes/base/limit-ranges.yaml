@@ -1,0 +1,123 @@
+---
+# Development Environment Limit Ranges
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: container-limits
+  namespace: coditect-dev
+  labels:
+    environment: development
+    resource-type: container
+spec:
+  limits:
+    # Container resource limits
+    - type: Container
+      default:
+        # Default limits (if not specified in deployment)
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest:
+        # Default requests (if not specified in deployment)
+        cpu: "100m"
+        memory: "128Mi"
+      max:
+        # Maximum resources a container can request
+        cpu: "2"
+        memory: "4Gi"
+      min:
+        # Minimum resources a container must request
+        cpu: "10m"
+        memory: "32Mi"
+
+    # Pod resource limits (sum of all containers)
+    - type: Pod
+      max:
+        cpu: "4"
+        memory: "8Gi"
+
+    # Persistent Volume Claim limits
+    - type: PersistentVolumeClaim
+      max:
+        storage: "20Gi"
+      min:
+        storage: "1Gi"
+
+---
+# Staging Environment Limit Ranges
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: container-limits
+  namespace: coditect-staging
+  labels:
+    environment: staging
+    resource-type: container
+spec:
+  limits:
+    # Container resource limits (larger than dev)
+    - type: Container
+      default:
+        cpu: "1"
+        memory: "1Gi"
+      defaultRequest:
+        cpu: "250m"
+        memory: "256Mi"
+      max:
+        cpu: "4"
+        memory: "8Gi"
+      min:
+        cpu: "50m"
+        memory: "64Mi"
+
+    # Pod resource limits
+    - type: Pod
+      max:
+        cpu: "8"
+        memory: "16Gi"
+
+    # Persistent Volume Claim limits
+    - type: PersistentVolumeClaim
+      max:
+        storage: "50Gi"
+      min:
+        storage: "1Gi"
+
+---
+# Production Environment Limit Ranges
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: container-limits
+  namespace: coditect-production
+  labels:
+    environment: production
+    resource-type: container
+spec:
+  limits:
+    # Container resource limits (production-grade)
+    - type: Container
+      default:
+        cpu: "2"
+        memory: "2Gi"
+      defaultRequest:
+        cpu: "500m"
+        memory: "512Mi"
+      max:
+        cpu: "8"
+        memory: "16Gi"
+      min:
+        cpu: "100m"
+        memory: "128Mi"
+
+    # Pod resource limits
+    - type: Pod
+      max:
+        cpu: "16"
+        memory: "32Gi"
+
+    # Persistent Volume Claim limits
+    - type: PersistentVolumeClaim
+      max:
+        storage: "100Gi"
+      min:
+        storage: "5Gi"

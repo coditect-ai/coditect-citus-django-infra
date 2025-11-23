@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Development Environment Overlay
+# Customizes base resources for development environment
+
+namespace: coditect-dev
+
+# Reference base resources
+bases:
+  - ../../base
+
+# Development-specific labels
+commonLabels:
+  environment: development
+  deployment-tier: dev
+
+# Development-specific annotations
+commonAnnotations:
+  environment: "development"
+  cost-center: "engineering-dev"
+  auto-shutdown: "true"  # Can shut down dev resources at night
+
+# Namespace-specific resource transformations
+# (Applied only to resources in coditect-dev namespace)
+patches:
+  # Reduce resource quotas for development
+  - target:
+      kind: ResourceQuota
+      name: compute-quota
+    patch: |-
+      - op: replace
+        path: /spec/hard/requests.cpu
+        value: "8"
+      - op: replace
+        path: /spec/hard/requests.memory
+        value: "16Gi"
+
+# ConfigMap generator (development-specific configs)
+configMapGenerator:
+  - name: environment-config
+    literals:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - ENABLE_PROFILING=true
+
+# Image transformation (use development tags)
+images:
+  - name: django-backend
+    newTag: dev-latest
+  - name: celery-worker
+    newTag: dev-latest

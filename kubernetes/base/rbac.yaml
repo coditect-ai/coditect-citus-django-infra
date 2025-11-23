@@ -1,0 +1,228 @@
+---
+# Service Account for Django Backend Application
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: django-backend
+  namespace: coditect-dev  # Will be overridden per environment
+  labels:
+    app: django-backend
+    component: api
+  annotations:
+    description: "Service account for Django backend pods"
+    iam.gke.io/gcp-service-account: "django-backend@PROJECT_ID.iam.gserviceaccount.com"
+
+---
+# Service Account for Celery Workers
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: celery-worker
+  namespace: coditect-dev
+  labels:
+    app: celery-worker
+    component: worker
+  annotations:
+    description: "Service account for Celery background task workers"
+    iam.gke.io/gcp-service-account: "celery-worker@PROJECT_ID.iam.gserviceaccount.com"
+
+---
+# Service Account for Monitoring
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: monitoring
+  namespace: coditect-dev
+  labels:
+    app: monitoring
+    component: observability
+  annotations:
+    description: "Service account for Prometheus and monitoring tools"
+
+---
+# Role: Application Developer (read-only access for debugging)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: app-developer
+  namespace: coditect-dev
+  labels:
+    rbac.coditect.ai/role: developer
+rules:
+  # Read-only access to pods, logs, and services
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "services", "configmaps"]
+    verbs: ["get", "list", "watch"]
+
+  # Read deployments and statefulsets
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "replicasets"]
+    verbs: ["get", "list", "watch"]
+
+  # Port-forward for debugging
+  - apiGroups: [""]
+    resources: ["pods/portforward"]
+    verbs: ["create"]
+
+---
+# Role: CI/CD Deployer (deployment permissions)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cicd-deployer
+  namespace: coditect-dev
+  labels:
+    rbac.coditect.ai/role: deployer
+rules:
+  # Full control over deployments
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "replicasets"]
+    verbs: ["*"]
+
+  # Manage services and configmaps
+  - apiGroups: [""]
+    resources: ["services", "configmaps", "secrets"]
+    verbs: ["create", "update", "patch", "delete", "get", "list"]
+
+  # Read pods for deployment verification
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+
+  # Manage horizontal pod autoscalers
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["*"]
+
+---
+# Role: Monitoring (metrics and health checks)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: monitoring
+  namespace: coditect-dev
+  labels:
+    rbac.coditect.ai/role: monitoring
+rules:
+  # Read all resources for monitoring
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints", "nodes"]
+    verbs: ["get", "list", "watch"]
+
+  # Read deployments and statefulsets
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "replicasets", "daemonsets"]
+    verbs: ["get", "list", "watch"]
+
+  # Access metrics
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list"]
+
+---
+# RoleBinding: Django Backend ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: django-backend-binding
+  namespace: coditect-dev
+  labels:
+    app: django-backend
+subjects:
+  - kind: ServiceAccount
+    name: django-backend
+    namespace: coditect-dev
+roleRef:
+  kind: Role
+  name: app-developer  # Django backend gets read-only access
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# RoleBinding: Celery Worker ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: celery-worker-binding
+  namespace: coditect-dev
+  labels:
+    app: celery-worker
+subjects:
+  - kind: ServiceAccount
+    name: celery-worker
+    namespace: coditect-dev
+roleRef:
+  kind: Role
+  name: app-developer  # Celery workers get read-only access
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# RoleBinding: Monitoring ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: monitoring-binding
+  namespace: coditect-dev
+  labels:
+    app: monitoring
+subjects:
+  - kind: ServiceAccount
+    name: monitoring
+    namespace: coditect-dev
+roleRef:
+  kind: Role
+  name: monitoring
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ClusterRole: Cross-Namespace Monitoring (for Prometheus)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: coditect-monitoring
+  labels:
+    rbac.coditect.ai/scope: cluster
+    rbac.coditect.ai/role: monitoring
+rules:
+  # Read all resources across namespaces
+  - apiGroups: [""]
+    resources: ["nodes", "nodes/metrics", "services", "endpoints", "pods"]
+    verbs: ["get", "list", "watch"]
+
+  # Read deployments and statefulsets
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
+    verbs: ["get", "list", "watch"]
+
+  # Access cluster metrics
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["nodes", "pods"]
+    verbs: ["get", "list"]
+
+  # Access custom metrics
+  - apiGroups: ["custom.metrics.k8s.io"]
+    resources: ["*"]
+    verbs: ["get", "list"]
+
+---
+# ClusterRoleBinding: Prometheus Monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: coditect-prometheus-monitoring
+  labels:
+    app: prometheus
+    rbac.coditect.ai/scope: cluster
+subjects:
+  - kind: ServiceAccount
+    name: monitoring
+    namespace: coditect-dev
+  - kind: ServiceAccount
+    name: monitoring
+    namespace: coditect-staging
+  - kind: ServiceAccount
+    name: monitoring
+    namespace: coditect-production
+roleRef:
+  kind: ClusterRole
+  name: coditect-monitoring
+  apiGroup: rbac.authorization.k8s.io

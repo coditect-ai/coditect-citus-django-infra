@@ -1,0 +1,267 @@
+---
+# Default Deny All Ingress Traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: coditect-dev  # Will be applied to each environment
+  labels:
+    policy: default-deny
+    environment: dev
+spec:
+  podSelector: {}  # Applies to all pods in namespace
+  policyTypes:
+    - Ingress
+  # No ingress rules = deny all
+
+---
+# Default Deny All Egress Traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+  namespace: coditect-dev
+  labels:
+    policy: default-deny
+    environment: dev
+spec:
+  podSelector: {}  # Applies to all pods in namespace
+  policyTypes:
+    - Egress
+  # No egress rules = deny all
+
+---
+# Allow Django Backend to Cloud SQL
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: django-to-cloudsql
+  namespace: coditect-dev
+  labels:
+    app: django-backend
+    policy: database-access
+spec:
+  podSelector:
+    matchLabels:
+      app: django-backend
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+
+    # Allow PostgreSQL connection (Cloud SQL via private IP)
+    - to:
+        - ipBlock:
+            cidr: 10.0.16.0/24  # db-subnet CIDR from networking module
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# Allow Django Backend to Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: django-to-redis
+  namespace: coditect-dev
+  labels:
+    app: django-backend
+    policy: cache-access
+spec:
+  podSelector:
+    matchLabels:
+      app: django-backend
+  policyTypes:
+    - Egress
+  egress:
+    # Allow Redis connection
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/20  # VPC subnet range
+      ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# Allow Celery Workers to Cloud SQL
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: celery-to-cloudsql
+  namespace: coditect-dev
+  labels:
+    app: celery-worker
+    policy: database-access
+spec:
+  podSelector:
+    matchLabels:
+      app: celery-worker
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+
+    # Allow PostgreSQL connection
+    - to:
+        - ipBlock:
+            cidr: 10.0.16.0/24
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# Allow Celery Workers to Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: celery-to-redis
+  namespace: coditect-dev
+  labels:
+    app: celery-worker
+    policy: cache-access
+spec:
+  podSelector:
+    matchLabels:
+      app: celery-worker
+  policyTypes:
+    - Egress
+  egress:
+    # Allow Redis connection
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/20
+      ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# Allow Ingress to Django Backend (from LoadBalancer)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-django
+  namespace: coditect-dev
+  labels:
+    app: django-backend
+    policy: ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: django-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow from GCP Load Balancer health checks
+    - from:
+        - ipBlock:
+            cidr: 35.191.0.0/16  # GCP health check ranges
+        - ipBlock:
+            cidr: 130.211.0.0/22
+      ports:
+        - protocol: TCP
+          port: 8000  # Django default port
+
+    # Allow from within namespace (pod-to-pod communication)
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8000
+
+---
+# Allow Prometheus to Scrape Metrics
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-scraping
+  namespace: coditect-dev
+  labels:
+    app: monitoring
+    policy: metrics
+spec:
+  podSelector:
+    matchLabels:
+      prometheus.io/scrape: "true"
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow Prometheus to scrape metrics
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090  # Prometheus metrics port
+
+---
+# Allow DNS for All Pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-access
+  namespace: coditect-dev
+  labels:
+    policy: dns
+spec:
+  podSelector: {}  # All pods
+  policyTypes:
+    - Egress
+  egress:
+    # Allow CoreDNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Allow Internet Egress for Package Updates (selectively)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internet-egress
+  namespace: coditect-dev
+  labels:
+    policy: internet-egress
+spec:
+  podSelector:
+    matchLabels:
+      internet-access: "true"  # Only pods with this label
+  policyTypes:
+    - Egress
+  egress:
+    # Allow HTTPS (package repos, APIs)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8      # Private networks
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443  # HTTPS
+        - protocol: TCP
+          port: 80   # HTTP

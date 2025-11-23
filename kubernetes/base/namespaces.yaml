@@ -1,0 +1,45 @@
+---
+# Development Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coditect-dev
+  labels:
+    name: coditect-dev
+    environment: development
+    project: coditect
+    managed-by: opentofu
+  annotations:
+    description: "Development environment for CODITECT platform"
+    owner: "coditect-infrastructure-team"
+
+---
+# Staging Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coditect-staging
+  labels:
+    name: coditect-staging
+    environment: staging
+    project: coditect
+    managed-by: opentofu
+  annotations:
+    description: "Staging environment for CODITECT platform (production-like testing)"
+    owner: "coditect-infrastructure-team"
+
+---
+# Production Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coditect-production
+  labels:
+    name: coditect-production
+    environment: production
+    project: coditect
+    managed-by: opentofu
+  annotations:
+    description: "Production environment for CODITECT platform"
+    owner: "coditect-infrastructure-team"
+    critical: "true"

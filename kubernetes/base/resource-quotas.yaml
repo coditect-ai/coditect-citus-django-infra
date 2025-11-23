@@ -1,0 +1,137 @@
+---
+# Development Environment Resource Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: coditect-dev
+  labels:
+    environment: development
+    quota-type: compute
+spec:
+  hard:
+    # Compute resources
+    requests.cpu: "8"           # 8 CPU cores total
+    requests.memory: "16Gi"     # 16 GB RAM total
+    limits.cpu: "16"            # 16 CPU cores max (burst)
+    limits.memory: "32Gi"       # 32 GB RAM max (burst)
+
+    # Pod counts
+    pods: "30"                  # Max 30 pods in dev
+
+    # Storage
+    requests.storage: "100Gi"   # 100 GB persistent storage
+    persistentvolumeclaims: "10" # Max 10 PVCs
+
+---
+# Development Environment Object Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: object-quota
+  namespace: coditect-dev
+  labels:
+    environment: development
+    quota-type: objects
+spec:
+  hard:
+    # Kubernetes objects
+    count/deployments.apps: "10"
+    count/statefulsets.apps: "5"
+    count/services: "15"
+    count/configmaps: "20"
+    count/secrets: "20"
+    count/jobs.batch: "10"
+    count/cronjobs.batch: "5"
+
+---
+# Staging Environment Resource Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: coditect-staging
+  labels:
+    environment: staging
+    quota-type: compute
+spec:
+  hard:
+    # Compute resources (larger than dev, smaller than prod)
+    requests.cpu: "16"          # 16 CPU cores total
+    requests.memory: "32Gi"     # 32 GB RAM total
+    limits.cpu: "32"            # 32 CPU cores max (burst)
+    limits.memory: "64Gi"       # 64 GB RAM max (burst)
+
+    # Pod counts
+    pods: "50"                  # Max 50 pods in staging
+
+    # Storage
+    requests.storage: "200Gi"   # 200 GB persistent storage
+    persistentvolumeclaims: "15" # Max 15 PVCs
+
+---
+# Staging Environment Object Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: object-quota
+  namespace: coditect-staging
+  labels:
+    environment: staging
+    quota-type: objects
+spec:
+  hard:
+    # Kubernetes objects
+    count/deployments.apps: "15"
+    count/statefulsets.apps: "8"
+    count/services: "20"
+    count/configmaps: "30"
+    count/secrets: "30"
+    count/jobs.batch: "15"
+    count/cronjobs.batch: "8"
+
+---
+# Production Environment Resource Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: coditect-production
+  labels:
+    environment: production
+    quota-type: compute
+spec:
+  hard:
+    # Compute resources (largest allocation)
+    requests.cpu: "32"          # 32 CPU cores total
+    requests.memory: "64Gi"     # 64 GB RAM total
+    limits.cpu: "64"            # 64 CPU cores max (burst)
+    limits.memory: "128Gi"      # 128 GB RAM max (burst)
+
+    # Pod counts
+    pods: "100"                 # Max 100 pods in production
+
+    # Storage
+    requests.storage: "500Gi"   # 500 GB persistent storage
+    persistentvolumeclaims: "25" # Max 25 PVCs
+
+---
+# Production Environment Object Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: object-quota
+  namespace: coditect-production
+  labels:
+    environment: production
+    quota-type: objects
+spec:
+  hard:
+    # Kubernetes objects
+    count/deployments.apps: "25"
+    count/statefulsets.apps: "15"
+    count/services: "30"
+    count/configmaps: "50"
+    count/secrets: "50"
+    count/jobs.batch: "25"
+    count/cronjobs.batch: "15"

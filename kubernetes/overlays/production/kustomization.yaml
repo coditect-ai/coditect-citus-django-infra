@@ -1,0 +1,79 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Production Environment Overlay
+# High-availability, production-grade configuration
+
+namespace: coditect-production
+
+# Reference base resources
+bases:
+  - ../../base
+
+# Production-specific labels
+commonLabels:
+  environment: production
+  deployment-tier: production
+  criticality: high
+
+# Production-specific annotations
+commonAnnotations:
+  environment: "production"
+  cost-center: "production-operations"
+  sla: "99.9-percent"
+  pagerduty-enabled: "true"
+  approval-required: "true"
+  backup-enabled: "true"
+
+# Namespace-specific resource transformations
+patches:
+  # Use maximum resource quotas for production
+  - target:
+      kind: ResourceQuota
+      name: compute-quota
+    patch: |-
+      - op: replace
+        path: /spec/hard/requests.cpu
+        value: "32"
+      - op: replace
+        path: /spec/hard/requests.memory
+        value: "64Gi"
+
+  # Increase network policy security for production
+  - target:
+      kind: NetworkPolicy
+      name: allow-internet-egress
+    patch: |-
+      - op: replace
+        path: /spec/podSelector/matchLabels/internet-access
+        value: "production-approved"
+
+# ConfigMap generator (production-specific configs)
+configMapGenerator:
+  - name: environment-config
+    literals:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=WARNING
+      - ENABLE_PROFILING=false
+      - ALERT_ON_ERRORS=true
+      - ALERT_ON_WARNING=true
+      - MONITORING_ENABLED=true
+      - DISTRIBUTED_TRACING=true
+
+# Image transformation (use immutable production tags with SHA digests)
+images:
+  - name: django-backend
+    newTag: production-stable  # Should use @sha256:... in production
+  - name: celery-worker
+    newTag: production-stable
+
+# Replica count adjustments (high availability)
+replicas:
+  - name: django-backend
+    count: 5  # Minimum 5 replicas for HA
+  - name: celery-worker
+    count: 3  # Minimum 3 workers for HA
+
+# Pod disruption budgets (ensure availability during updates)
+# This will be added when actual deployments are created

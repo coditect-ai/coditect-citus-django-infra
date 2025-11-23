@@ -1,0 +1,61 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Staging Environment Overlay
+# Production-like environment for final testing before deployment
+
+namespace: coditect-staging
+
+# Reference base resources
+bases:
+  - ../../base
+
+# Staging-specific labels
+commonLabels:
+  environment: staging
+  deployment-tier: staging
+
+# Staging-specific annotations
+commonAnnotations:
+  environment: "staging"
+  cost-center: "engineering-staging"
+  production-like: "true"
+  approval-required: "true"
+
+# Namespace-specific resource transformations
+patches:
+  # Use staging resource quotas (moderate resources)
+  - target:
+      kind: ResourceQuota
+      name: compute-quota
+    patch: |-
+      - op: replace
+        path: /spec/hard/requests.cpu
+        value: "16"
+      - op: replace
+        path: /spec/hard/requests.memory
+        value: "32Gi"
+
+# ConfigMap generator (staging-specific configs)
+configMapGenerator:
+  - name: environment-config
+    literals:
+      - ENVIRONMENT=staging
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - ENABLE_PROFILING=false
+      - ALERT_ON_ERRORS=true
+
+# Image transformation (use staging tags with specific versions)
+images:
+  - name: django-backend
+    newTag: staging-stable
+  - name: celery-worker
+    newTag: staging-stable
+
+# Replica count adjustments (production-like scale)
+replicas:
+  - name: django-backend
+    count: 3
+  - name: celery-worker
+    count: 2
