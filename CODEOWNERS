@@ -1,0 +1,46 @@
+# CODEOWNERS for coditect-citus-django-infra
+#
+# These owners will be automatically requested for review when a PR
+# modifies code in specific areas.
+#
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @coditect-infrastructure-team
+
+# Terraform infrastructure
+/terraform/ @coditect-infrastructure-team @coditect-devops-lead
+
+# Kubernetes configurations
+/kubernetes/ @coditect-kubernetes-team @coditect-devops-lead
+
+# Django application
+/django/ @coditect-backend-team @coditect-tech-lead
+
+# Citus database configurations
+/citus/ @coditect-database-team @coditect-tech-lead
+
+# Monitoring and observability
+/monitoring/ @coditect-sre-team
+/kubernetes/monitoring/ @coditect-sre-team
+
+# CI/CD workflows
+/.github/workflows/ @coditect-devops-lead
+
+# Documentation
+/docs/ @coditect-tech-lead
+README.md @coditect-tech-lead
+CONTRIBUTING.md @coditect-tech-lead
+
+# Security-sensitive files
+*.yaml @coditect-security-team
+*.yml @coditect-security-team
+/terraform/**/*.tf @coditect-security-team
+CODEOWNERS @coditect-tech-lead
+
+# Python dependencies
+requirements*.txt @coditect-backend-team @coditect-security-team
+pyproject.toml @coditect-backend-team @coditect-security-team
+
+# Scripts
+/scripts/ @coditect-devops-lead
