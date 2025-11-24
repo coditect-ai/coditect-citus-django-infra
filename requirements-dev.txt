@@ -20,7 +20,7 @@ pre-commit==4.0.1
 # Development Tools
 ipython==8.30.0
 ipdb==0.13.13
-django-extensions==3.2.3
+django-extensions==4.1
 django-debug-toolbar==4.4.6
 
 # Documentation
