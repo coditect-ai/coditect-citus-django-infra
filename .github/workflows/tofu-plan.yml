@@ -59,7 +59,7 @@ jobs:
           tofu show -no-color tfplan > plan-readable.txt
 
       - name: Upload plan artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: tofu-plan-${{ matrix.environment }}
           path: |
